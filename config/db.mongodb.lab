@@ -1,0 +1,23 @@
+$TTL    604800
+@       IN      SOA     ns.mongodb.lab. admin.mongodb.lab. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      ns.mongodb.lab.
+@       IN      A       192.168.147.1
+ns      IN      A       192.168.147.10
+mongo1  IN      A       192.168.147.3
+mongo2  IN      A       192.168.147.4
+mongo3  IN      A       192.168.147.5
+
+
+; MongoDB SRV records for the replica set "mongo-replica"
+_mongodb._tcp.rs.mongodb.lab.  IN SRV 0 0 27017 mongo1.mongodb.lab.
+_mongodb._tcp.rs.mongodb.lab.  IN SRV 0 0 27018 mongo2.mongodb.lab.
+_mongodb._tcp.rs.mongodb.lab.  IN SRV 0 0 27019 mongo3.mongodb.lab.
+
+; TXT record indicating the replica set name
+rs.mongodb.lab. IN TXT "replicaSet=mongo-replica&authSource=admin"

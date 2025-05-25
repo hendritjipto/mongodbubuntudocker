@@ -1,0 +1,130 @@
+version: "3.5"
+
+services:
+  
+  ubuntuclient:
+    image: pix3lize/mdbubuntu
+    container_name: ubuntuclient
+    working_dir: /home/mdb
+    platform: linux/arm64
+    entrypoint: ["/bin/bash", "-c"]
+    networks:
+      bindnet :
+        ipv4_address: 192.168.147.2
+    dns:
+      - 192.168.147.88
+    command: 
+      - |
+        tail -f /dev/null
+    depends_on:
+      - mongodb1
+      - mongodb2
+      - mongodb3
+
+  mongodb1:
+    image: pix3lize/mdbubuntu
+    container_name: mongodb1
+    working_dir: /home/mdb
+    cap_add:
+      - NET_ADMIN
+    platform: linux/arm64
+    networks:
+      bindnet :
+        ipv4_address: 192.168.147.3
+    dns:
+      - 192.168.147.88
+    volumes:
+      - $PWD/mongodb-keyfile:/data/replica.key
+      - $PWD/mongod1.conf:/data/mongod.conf
+      - mongodbubuntu1:/data/db      
+      - ./init-replica.sh:/home/mdb/init-replica.sh   
+    entrypoint: ["/bin/bash", "-c"]
+    command: 
+      - |
+        chmod +x /home/mdb/mongod
+        cd /home/mdb
+        ./mongod --config /data/mongod.conf &
+        chmod +x /home/mdb/init-replica.sh
+        bash /home/mdb/init-replica.sh        
+        tail -f /dev/null
+
+  mongodb2:
+    image: pix3lize/mdbubuntu
+    container_name: mongodb2
+    working_dir: /home/mdb
+    cap_add:
+      - NET_ADMIN
+    platform: linux/arm64
+    volumes:
+      - $PWD/mongodb-keyfile:/data/replica.key
+      - $PWD/mongod2.conf:/data/mongod.conf
+      - mongodbubuntu2:/data/db
+    entrypoint: ["/bin/bash", "-c"]
+    networks:
+      bindnet :
+        ipv4_address: 192.168.147.4
+    dns:
+      - 192.168.147.88
+    command: 
+      - |
+        chmod +x /home/mdb/mongod
+        cd /home/mdb
+        ./mongod --config /data/mongod.conf
+        tail -f /dev/null
+
+  mongodb3:
+    image: pix3lize/mdbubuntu
+    container_name: mongodb3
+    working_dir: /home/mdb
+    cap_add:
+      - NET_ADMIN
+    platform: linux/arm64
+    volumes:
+      - $PWD/mongodb-keyfile:/data/replica.key
+      - $PWD/mongod3.conf:/data/mongod.conf
+      - mongodbubuntu3:/data/db
+    entrypoint: ["/bin/bash", "-c"]
+    networks:
+      bindnet :
+        ipv4_address: 192.168.147.5
+    dns:
+      - 192.168.147.88
+    command: 
+      - |
+        chmod +x /home/mdb/mongod
+        cd /home/mdb
+        ./mongod --config /data/mongod.conf
+        tail -f /dev/null     
+
+  bind9:
+    image: ubuntu/bind9
+    container_name: bind9
+    ports:
+      - "30053:53/tcp"
+      - "30053:53/udp"
+    volumes:
+      - $PWD/config:/etc/bind:rw
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Singapore
+    networks:
+      bindnet:
+        ipv4_address: 192.168.147.88
+    depends_on:
+      - mongodb1
+      - mongodb2
+      - mongodb3
+
+volumes:
+  mongodbubuntu1:
+  mongodbubuntu2:
+  mongodbubuntu3:
+
+networks:
+  bindnet:
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.147.0/24
+
+#192.168.147.4

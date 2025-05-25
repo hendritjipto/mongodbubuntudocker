@@ -1,0 +1,13 @@
+$TTL    604800
+@       IN      SOA     ns.mongodb.lab. admin.mongodb.lab. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      ns.mongodb.lab.
+10      IN      PTR     mongodb.lab.
+11      IN      PTR     mongo1.mongodb.lab.
+12      IN      PTR     mongo2.mongodb.lab.
+13      IN      PTR     mongo3.mongodb.lab.

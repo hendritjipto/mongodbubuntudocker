@@ -1,0 +1,19 @@
+{
+    "name": "asik",
+    "type": "module",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@faker-js/faker": "^8.4.1",
+        "express": "^5.1.0",
+        "mongodb": "^6.8.0",
+        "ws": "^8.18.2"
+    },
+    "keywords": [],
+    "description": ""
+}
