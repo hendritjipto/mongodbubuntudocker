@@ -22,3 +22,5 @@ rs.reconfig( cfg, { force: true } );
 cfg = rs.conf()
 cfg.members[1].tags = { "node": "b", "location": "dc" }
 rs.reconfig(cfg)
+
+nslookup -type=SRV _mongodb._tcp.rs.mongodb.lab

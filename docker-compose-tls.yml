@@ -37,9 +37,9 @@ services:
       - 192.168.147.88
     volumes:
       - $PWD/mongodb-keyfile:/data/replica.key
-      - $PWD/mongod1.conf:/data/mongod.conf
+      - $PWD/mongod1-tls.conf:/data/mongod.conf
       - mongodbubuntu1:/data/db      
-      - ./init-replica.sh:/home/mdb/init-replica.sh   
+      - ./init-replica-tls.sh:/home/mdb/init-replica.sh   
     entrypoint: ["/bin/bash", "-c"]
     command: 
       - |
@@ -47,7 +47,7 @@ services:
         cd /home/mdb
         ./mongod --config /data/mongod.conf &
         chmod +x /home/mdb/init-replica.sh
-        bash /home/mdb/init-replica.sh 
+        bash /home/mdb/init-replica.sh        
         tail -f /dev/null
 
   mongodb2:
@@ -59,7 +59,7 @@ services:
     platform: linux/arm64
     volumes:
       - $PWD/mongodb-keyfile:/data/replica.key
-      - $PWD/mongod2.conf:/data/mongod.conf
+      - $PWD/mongod2-tls.conf:/data/mongod.conf
       - mongodbubuntu2:/data/db
     entrypoint: ["/bin/bash", "-c"]
     networks:
@@ -83,7 +83,7 @@ services:
     platform: linux/arm64
     volumes:
       - $PWD/mongodb-keyfile:/data/replica.key
-      - $PWD/mongod3.conf:/data/mongod.conf
+      - $PWD/mongod3-tls.conf:/data/mongod.conf
       - mongodbubuntu3:/data/db
     entrypoint: ["/bin/bash", "-c"]
     networks:

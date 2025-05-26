@@ -74,6 +74,11 @@ docker exec -it ubuntuclient bash
 
 You can run tools like `dig mongo1`, `mongo`, or `mongotop` from this container.
 
+### 3. Extra parameter 
+When connecting to MongoDB when TLS is not setup
+```bash
+mongosh "mongodb+srv://<username>:<password>@rs.mongodb.lab/?tls=false"
+```
 ---
 
 ## 🔗 DNS Zone File Summary (`mongodb.lab`)
@@ -126,6 +131,55 @@ tc qdisc del dev eth0 root
 ```
 
 ---
+
+## 🔐MongoDB Replica Set with TLS and Authentication
+
+This setup creates a secure MongoDB replica set with:
+
+- TLS encryption for all connections
+- Internal member authentication via `keyFile`
+- Client authentication using `x509` and SCRAM
+- Priority-based replica election
+- Initial replica set configuration and admin user setup
+
+Both CA certificate `mongodb-ca.pem` and server certificate `mongodb-server.pem` for MongoDB is located on `/home/mdb`
+
+In addition `mongodb-ca.pem` already installed as trusted CA for ubuntu image however, some application needs extra command to read CA from the system. 
+
+Please run this command : 
+
+```bash
+docker compose -f docker-compose-tls.yml up -d
+```
+
+📝Notes
+For the intial setup such as replication initiation we're using this command, as MongoDB allow localhost connection for the initial setup (replication init and create admin user)
+
+```bash
+mongosh --tls true --host localhost --tlsAllowInvalidHostnames
+```
+
+In addition, please find the mongodb config file 
+```yaml
+net:
+  port: 27017
+  bindIpAll: true
+  
+  tls:
+    mode: requireTLS
+    certificateKeyFile: /home/mdb/mongodb-server.pem
+    CAFile: /home/mdb/mongodb-ca.pem
+    allowConnectionsWithoutCertificates: true
+    disabledProtocols: TLS1_0,TLS1_1
+
+security:
+  keyFile: /data/replica.key
+  authorization: enabled
+  clusterAuthMode: x509    
+```
+
+---
+
 
 ## 🧹 Cleanup
 
